@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+	
+{% block content %}
+{% include "includes/dealer_tab.html" %}
+
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-7 title" >
+						<span class="fa fa-user"></span>Dealer Details				
+					</div>
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+				<table class="dealer-detail">
+					<tr>
+						<th width="120px">Dealer name</th>
+						<td>: {{dealer.dealer_name}}</td>
+					</tr>
+
+					<tr>
+						<th>Dealer Address</th>
+						<td>: {{dealer.dealer_address}}</td>
+					</tr>
+
+					<tr>
+						<th>Contact Number</th>
+						<td>: {{dealer.dealer_contact_number}}</td>
+					</tr>
+
+					<tr>
+						<th>Email</th>
+						<td>: {{dealer.dealer_email}}</td>
+					</tr>
+				</table>
+			</div>
+
+
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-9 title" >
+						<span class="fa fa-book"></span>Order History				
+					</div>
+					<div class="col-sm-3">
+						<input type="Date" placeholder="Search user by name" class="form-control" style="top:-6px;padding:2px;position: absolute;right:15px">	
+					</div>
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>Order Date</th>
+							<th>Due Date</th>
+							<th>Product Quantity</th>
+							<th>Date</th>
+							<th>Discount</th>
+							<th><center>Actions</center></th>
+						</tr>
+
+						<tr>
+							<td>Date</td>
+							<td>Product Quantity</td>
+							<td>Date</td>
+							<td>Discount</td>
+							<td><center>Actions</center></td>
+						</tr>
+					</thead>
+					<tbody>	
+
+					</tbody>	
+				</table>
+				<div class="clearFix">					
+					<a href="" class="btn btn-primary">Add New Order</a>
+				</div>
+			</div>
+
+			
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+{% endblock content %}

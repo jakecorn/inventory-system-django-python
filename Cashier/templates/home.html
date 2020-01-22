@@ -1,0 +1,293 @@
+{% load static %}
+{% load product_tag %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My First Project</title>
+	<link rel="stylesheet" type="text/css" href="{% static "css/bootstrap.min.css" %}">
+	<link rel="stylesheet" type="text/css" href="{% static "css/font.css" %}">
+	<link rel="stylesheet" type="text/css" href="{% static "css/custom.css" %}">
+	<script type="text/javascript" src="{% static "js/jquery.min.js" %}"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			// alert()
+		});
+
+		function search_product(a){
+			search = $(a).val();
+			if(search.length==0){
+				$('.product-row-loaded').show()
+				$('.product-row-search').hide()
+				return false;
+			}else{
+
+			}
+			loader = $('.img-loader');
+			loader.show();
+
+			table = $('.product-table tbody .product-row-loaded:last');
+			$('.product-row-loaded').hide()
+			$('.product-row-search').remove()
+			$.ajax({
+				url:"/cashier/product/search/",
+				type:'POST',
+ 				data:{"search":search,"csrfmiddlewaretoken":$('[name=csrfmiddlewaretoken]').val()},
+				success:function(data){
+
+					data = JSON.parse(data)
+					data_len = data.length
+					
+					for(index=0; index<data_len;index++){
+
+
+						css_error = "None";
+						css_hide = "";
+						if(parseInt(data[index].product_quantity)==0){
+							css_error = "style='background:#ffb7b7'";
+							css_hide="style=display:none"
+						}
+						htm="<tr class='product-row-search' "+css_error+" id='productid"+data[index].id+"'>\
+								<td>"+data[index].product_code+"</td>\
+								<td>"+data[index].product_name+"</td>\
+								<td class='price'>&#8369 <span>"+data[index].product_price+"</span></td>\
+								<td class='quantity'>"+data[index].product_quantity+"</td>\
+								<td class='action-container' align='center'>\
+									<button onclick='add_product("+data[index].id+")' "+css_hide+" class='btn btn-primary action' title='Delete User'>\
+										<span class='fa fa-plus'></span> <span>Add</span>\
+									</button>\
+								</td>\
+							</tr>";
+
+							table.after(htm).show()
+
+
+					}
+					loader.hide();
+
+				},
+				error:function(){
+					loader.hide();
+				}
+			});
+		}
+
+		function add_product(id) {
+
+			quantity = prompt("Enter Quantity: ",1)
+			if(quantity!=null){				
+				list = $('.ordered-table');
+	 			selected = $('#productid'+id+":last").clone().show();
+	 			$('.ordered-table #productid'+id).remove();
+	 			but = $(selected).find("button");
+	 			$(but).find("button").removeClass("fa-plus").addClass("fa-remove")
+	 			$(but).find("span:last").text("Remove")
+	 			but.removeClass("btn-primary").addClass("btn-danger").attr("onclick","remove_ordered("+id+")")
+				selected.removeClass("product-row-loaded").removeClass("product-row-search").addClass("ordered-product").attr("product-id",id);
+				list.append(selected)
+				$(selected).find(".quantity").text(quantity)
+			}
+
+			count_order()
+		}
+
+		function count_order(){
+			total_order=0;
+
+			$('.ordered-product').each(function(index,el){
+				price = parseFloat($(el).find(".price span").text().replace(/,/g, ''));
+				quantity = parseInt($(el).find(".quantity").text());
+				total_order+=price*quantity;
+			});
+
+			$('#total-order').html(total_order.toFixed(2))
+		}
+
+		function remove_ordered(id) {
+			$('.ordered-table #productid'+id).remove();
+			count_order()
+		}
+
+		function check_cash(amount){
+			
+			total_order = parseInt($('#total-order').text())
+			change = $('#change');
+			if(amount>=total_order && total_order>0){
+				$('#proceed-order').prop("disabled",false)
+				change.css("color","blue")
+			}else{
+				$('#proceed-order').prop("disabled",true)
+				change.css("color","red")
+			}
+
+			change_total = amount-total_order;
+			change.text(change_total)
+		}
+
+		function proceed_order(){
+			orders = new Array();
+			$('.ordered-product').each(function(index,el){
+				productid = $(this).attr("product-id");
+				price = parseFloat($(el).find(".price span").text().replace(/,/g, ''));
+				quantity = parseInt($(el).find(".quantity").text());
+				orders.push(productid+"::"+price+"::"+quantity);
+			});
+
+			$.ajax({
+				url:"/cashier/order/save/",
+				type:'POST',
+				// dataType:'json',
+				data:{"orders":orders,"csrfmiddlewaretoken":$('[name=csrfmiddlewaretoken]').val()},
+				success:function(data){
+					window.location.reload()
+				},
+				error:function(){
+					alert("error")
+				}
+			});
+		}
+	</script>
+</head>
+<body>
+	{% csrf_token %}
+	<header>
+		<div id="profile">
+			Jake D. Cornelia
+			
+		</div>
+	</header>	
+	<div class="container">
+		
+	<br>
+	<br>
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="content-wrapper m-top">
+					<div name="content">							
+						<div class="head">
+							<div class="row">				
+								<div class="col-sm-7 title" >
+									<span class="fa fa-book"></span>Search Product				
+								</div>
+							</div>
+						</div>
+
+
+						<div class="content padding table-responsive">
+							<form>
+								<div class="form-group">
+									<label>Search Product</label>
+									<input type="text" name="search" class="form-control" placeholder="Search product by name or code" onkeyup="return search_product(this)">
+								</div>
+
+								<div class="form-group hidden">
+									<label>Scan Product Bar Code</label>
+									<input type="text" name="search" placeholder="Scan bar code" class="form-control" onkeyup="return search_product(this)">
+									<div class="form-group text-center img-loader" style="display: none">
+										<img src="{% static "images/loading.gif" %}">
+									</div>
+								</div>
+							</form>
+						</div>
+						<div class="padding table-responsive">
+							<table class="table table-hover product-table">
+								<thead>
+									<tr>
+										<th>Product Code</th>
+										<th>Product Name</th>
+										<th>Product Price</th>
+										<th>Quantity</th>
+										<th><center>Action</center></th>
+									</tr>
+								</thead>
+								<tbody>								
+									
+									{% for product in product_list %}
+										<tr class="product-row-loaded" id="productid{{ product.id }}">
+											<td>{{ product.product_code }}</td>
+											<td>{{ product.product_name }}</td>
+											<td class="price">&#8369 <span>{% money_format product.product_price %}</span></td>
+											<td class="quantity">{{ product.product_quantity }}</td>
+											<td class="action-container" align="center">
+
+												<button onclick="add_product({{ product.id }})" class="btn btn-primary action" title="Delete User">
+													<span class="fa fa-plus"></span> <span>Add</span>
+												</button>
+											</td>
+										</tr>
+									{% endfor %}	
+									<tr class="product-row-loaded">
+									</tr>								
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div> <!--end of wrapper-->
+
+			</div> <!--end of left column-->
+
+			<div class="col-sm-6">
+				<div class="content-wrapper m-top">
+					<div name="content">							
+						<div class="head">
+							<div class="row">				
+								<div class="col-sm-7 title" >
+									<span class="fa fa-book"></span>Selected Product				
+								</div>
+							</div>
+						</div>
+
+
+						<div class="content padding table-responsive">
+							
+						</div>
+						<div class="padding table-responsive">
+							<table class="table table-hover ordered-table">
+								<thead>
+									<tr>
+										<th>Product Code</th>
+										<th>Product Name</th>
+										<th>Product Price</th>
+										<th>Quantity</th>
+										<th><center>Action</center></th>
+									</tr>
+								</thead>
+								<tbody>							
+								</tbody>
+							</table>
+						</div>
+
+						<div class="padding">
+							
+							<div class="row">
+								<div class="col-sm-6">
+									<h3>Total: &#8369 <span id="total-order">0.00</span></h3>
+								</div>
+								<div class="col-sm-6">
+									<h3>
+										<span>Change: &#8369 <span id="change">0.00</span></span>
+									</h3>
+								</div>
+							</div>
+							<div class="form-group">
+								<h3>Cash</h3>	
+								<input type="number" class="form-control" maxlength="7" value="0" onkeyup="check_cash(this.value)">
+							</div>
+								<button class="btn btn-primary form-control" id="proceed-order" onclick="proceed_order()" disabled="true">Proceed to Purchase</button>
+						</div>
+					</div> <!--end of content-->
+				</div> <!--end of wrapper-->
+
+
+			</div> <!--end of right column-->
+		</div><!--end of row-->
+			
+	</div><!--end of container-->
+</body>
+</html>
+
+<style type="text/css">
+	header{
+		padding: 20px;
+		background: #1e8e1e
+	}
+</style>

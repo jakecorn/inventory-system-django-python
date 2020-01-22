@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+	
+{% block content %}
+{% include "includes/supplier_tab.html" %}
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-7 title" >
+						<span class="fa fa-book"></span>Update Supplier				
+					</div>
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+					
+					<form action="" method="post">
+						{% csrf_token %}
+						{% for field in form %}
+							<div class="form-group">
+								<label>{{field.label}}</label>
+								{{field.errors}}
+								{{field}}
+							</div>
+						{% endfor %}
+						
+						<div class="form-group">
+							<a href="{% url "supplier_list"%}" class="btn btn-warning text-white m-right">Cancel Update</a>
+							<button class="btn btn-primary text-white b-width">Save Update</button>
+						</div>
+					</form>
+			</div>
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+{% endblock content %}

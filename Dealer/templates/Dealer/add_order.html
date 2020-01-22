@@ -1,0 +1,436 @@
+{% extends "layout.html" %}
+{% load product_tag %}
+{% load static %}
+
+	
+{% block content %}
+{% include "includes/dealer_tab.html" %}
+{% csrf_token %}
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-7 title" >
+						<span class="fa fa-user"></span>Dealer Details				
+					</div>
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+				<table class="dealer-detail">
+					<tr>
+						<th width="150px">Dealer name</th>
+						<td>: {{dealer.dealer_name}}</td>
+					</tr>
+
+					<tr>
+						<th>Dealer Address</th>
+						<td>: {{dealer.dealer_address}}</td>
+					</tr>
+
+					<tr>
+						<th>Contact Number</th>
+						<td>: {{dealer.dealer_contact_number}}</td>
+					</tr>
+
+					<tr>
+						<th>Email</th>
+						<td>: {{dealer.dealer_email}}</td>
+					</tr>
+				</table>
+			</div>
+
+
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-4 title" >
+						<span class="fa fa-calendar"></span>Order History				
+					</div>
+					<div class="col-sm-8">
+						<form class="form-inline pull-right" method="get">
+								<div class="form-group">
+									<label for="monthly" class="m-sm-right">
+										<input type="checkbox" name="monthly" id="monthly" onclick="monthly_check(this)">&nbsp;Monthly								
+									</label>
+								</div>
+								<div class="form-group">
+									<input type="date" name="date" id="search_date" value="{{date_field}}" class="form-control m-sm-right" style="min-width:300px">
+								</div>
+								<div class="form-group">
+									<button class="btn btn-secondary form-control" style="padding:8px;"><span class="fa fa-search"></span> Search</button>
+								</div>
+							</form>
+					</div>
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>Order Date</th>
+							<th>Due Date</th>
+							<th>Product Quantity</th>
+							<th>Total Amount</th>
+							<th>Discount</th>
+							<th>Balance <small>(Discounted)</small></th>
+							<th><center>Actions</center></th>
+						</tr>
+
+						{% for history in order_histories %}
+							<tr>
+								<td>{{history.date}}</td>
+								<td>Date</td>
+								<td>{{history.all_quantity}}</td>
+								<td>&#8369&nbsp;{% money_format history.total_amount %}</td>
+								<td>&#8369&nbsp;{% money_format history.total_discount %}</td>
+								<td>&#8369&nbsp;{%subtract_two  history.total_amount history.total_discount %}</td>
+ 								<td class="action-container" align="center">
+									<a  href="{% url "dealer_update" history.dealer_id %}" class="btn btn-primary btn-sm action" title="Edit Dealer Data">
+										<span class="fa fa-plus"></span> Add Payment
+									</a>
+ 									<a  href="{% url "dealer_update" history.dealer_id %}" class="btn btn-primary btn-sm action" title="Edit Dealer Data">
+										<span class="fa fa-plus"></span> View Products
+									</a>
+								</td>
+							</tr>
+						{%empty%}
+						<tr>
+							<td colspan="12312" align="center">
+								<h1 class="text-danger">No record found!</h1>
+							</td>
+						</tr>
+						{% endfor %}
+					</thead>
+					<tbody>	
+
+					</tbody>	
+				</table>
+				<a href="{% url "add_order" dealer.id %}" class="btn btn-secondary m-sm-right">View All Histories</a>
+
+				<button class="btn btn-primary" onclick="add_new_order(this)">Add New Order</button>
+			</div>
+
+			
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+
+
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-4 title" >
+						<span class="fa fa-calendar"></span>Order Details				
+					</div> 
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>Code</th>
+							<th>Product</th>
+							<th>Price</th>
+							<th>Quantity</th>
+							<th>Discount %</th>
+							<th>Date</th>
+							<th>Balance</th>
+							<th>Payment&nbsp;<small><span style="font-weight:normal;">(Discounted)</span></small></th>
+						</tr>
+					</thead>
+					<tbody>				 
+	 					{% for invent in inventory %}
+							<tr>
+								<td><b>{{forloop.counter}}.</b>&nbsp;{{ invent.product.product_code }}</td>
+								<td>{{ invent.product.product_name }}</td>
+								<td>&#8369&nbsp;{% money_format invent.product_price %}</td>
+								<td>{{ invent.product_quantity }}</td>
+								<td>&#8369&nbsp;{% product_discount invent.product_price invent.product_quantity invent.product_discount %}&nbsp;({{invent.product_discount}}%) </td>
+								<td>{{ invent.date }}</td>
+								<td>1</td>
+								<td class="total_payment" name="{% total_payment invent.product_price invent.product_quantity invent.product_discount %}">&#8369 {% total_payment_format invent.product_price invent.product_quantity invent.product_discount %}</td>
+							
+
+							</tr>
+						{% empty %}
+							<tr>
+								<td colspan="1000" align="center">
+									<h1 class="text-danger">No record found!</h1>
+								</td>
+							</tr>
+
+						{% endfor %}
+
+
+					</tbody>
+					<tr>
+						<td colspan="1000">
+							<h2 class="text-right">Total: &#8369 <span id="total_payment_display"></span></h2>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+<div class="modal fade" tabindex="21" id="quantity_modal" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content padding">
+    	<label>Enter Quantity: <b id="product_name"></b></label>
+    	<div class="form-group">    		
+      		<input type="number" id="product_quantity_field" class="form-control">
+    	</div>
+      <button class="btn btn-primary" id="add_product_button" onclick="add_product_proceed()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="order_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><span class="fa fa-cart-plus"></span> Add New Order</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+			<div name="content">							
+				<div class="head">
+					<div class="row">
+						<div class="col-sm-6 offset-6">
+							<input type="text" id="search_product" class="form-control" placeholder="To order, search a product here..." onkeyup="return search_product(this)">
+							<div class="suggestion-container" style="display: none;">
+								<div class="form-group text-center img-loader" style="display: none">
+									<img src="{% static "images/loading.gif" %}">
+								</div>
+								<table class="table table-hover product-table">
+										<thead>
+											<tr>
+												<th>Product Code</th>
+												<th>Product Name</th>
+												<th>Product Price</th>
+												<th>Quantity</th>
+												<th><center>Action</center></th>
+											</tr>
+										</thead>
+										<tbody>
+
+										</tbody>
+									</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="p-top table-responsive">
+					<table class="table table-hover ordered-table">
+						<thead>
+							<tr>
+								<th>Product Code</th>
+								<th>Product Name</th>
+								<th>Product Price</th>
+								<th>Quantity</th>
+								<th><center>Action</center></th>
+							</tr>
+						</thead>
+						<tbody>							
+						</tbody>
+					</table>
+				</div>
+
+				<div class="padding">
+					
+					<div class="row">
+						<div class="col-sm-6">
+							<h4>Total: &#8369 <span id="total-order">0.00</span></h4>
+						</div>
+						<div class="col-sm-6">
+							<h4>
+								<span>Change: &#8369 <span id="change">0.00</span></span>
+							</h4>
+						</div>
+					</div>
+					<div class="form-group">
+						<h3>Cash</h3>	
+						<input type="number" class="form-control" maxlength="7" value="0" onkeyup="check_cash(this.value)">
+					</div>
+						
+				</div>
+			</div> <!--end of content-->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary form-control" id="proceed-order" onclick="proceed_order()" disabled="true">Proceed to Purchase</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+	function add_new_order(a) {
+		$('#order_modal').modal('show');
+	}
+
+	function search_product(a){
+			search = $(a).val();
+			if(search.length==0){
+				$('.suggestion-container').hide()
+				return false;
+			}
+			$('.suggestion-container').show()
+			loader = $('.img-loader');
+			loader.show();
+
+			table = $('.product-table tbody');
+			$.ajax({
+				url:"/cashier/product/search/",
+				type:'POST',
+ 				data:{"search":search,"csrfmiddlewaretoken":$('[name=csrfmiddlewaretoken]').val()},
+				success:function(data){
+
+					data = JSON.parse(data)
+					data_len = data.length
+					htm=""
+					for(index=0; index<data_len;index++){
+
+
+						css_error = "None";
+						css_hide = "";
+						if(parseInt(data[index].product_quantity)==0){
+							css_error = "style='background:#ffb7b7'";
+							css_hide="style=display:none"
+						}
+						htm+="<tr class='product-row-search' "+css_error+" id='productid"+data[index].id+"'>\
+								<td>"+data[index].product_code+"</td>\
+								<td>"+data[index].product_name+"</td>\
+								<td class='price'>&#8369 <span>"+data[index].product_price+"</span></td>\
+								<td class='quantity'>"+data[index].product_quantity+"</td>\
+								<td class='action-container' align='center'>\
+									<button onclick='add_product("+data[index].id+")' "+css_hide+" class='btn btn-primary action' title='Delete User'>\
+										<span class='fa fa-plus'></span> <span>Add</span>\
+									</button>\
+								</td>\
+							</tr>";
+
+
+
+					}
+					table.html(htm).show()
+					loader.hide();
+
+				},
+				error:function(){
+					loader.hide();
+				}
+			});
+		}
+
+
+		function add_product(id) {
+			product_name = $('tr#productid'+id).children('td:eq(1)').html();
+			$('#product_name').text(product_name);
+			$('#order_modal').modal('hide');
+			$('#quantity_modal').modal('show');
+			$('#add_product_button').attr("onclick","add_product_proceed("+id+")")
+		}
+
+		function add_product_proceed(id) {
+			$('#quantity_modal').modal('hide');
+			$('#order_modal').modal('show');
+			quantity = $('#product_quantity_field').val();
+			if(quantity>0){
+				$('#search_product').val("");			
+				$('.suggestion-container').hide();			
+				list = $('.ordered-table');
+	 			selected = $('#productid'+id+":last").clone().show();
+	 			$('.ordered-table #productid'+id).remove();
+	 			but = $(selected).find("button");
+	 			$(but).find("button").removeClass("fa-plus").addClass("fa-remove")
+	 			$(but).find("span:last").text("Remove")
+	 			but.removeClass("btn-primary").addClass("btn-danger").attr("onclick","remove_ordered("+id+")")
+				selected.removeClass("product-row-loaded").removeClass("product-row-search").addClass("ordered-product").attr("product-id",id);
+				list.append(selected)
+				$(selected).find(".quantity").text(quantity)
+			}
+
+			count_order()
+		}
+
+		function count_order(){
+			total_order=0;
+
+			$('.ordered-product').each(function(index,el){
+				price = parseFloat($(el).find(".price span").text().replace(/,/g, ''));
+				quantity = parseInt($(el).find(".quantity").text());
+				total_order+=price*quantity;
+			});
+
+			$('#total-order').html(total_order.toFixed(2))
+		}
+
+		function remove_ordered(id) {
+			$('.ordered-table #productid'+id).remove();
+			count_order()
+		}
+
+		function check_cash(amount){
+			
+			total_order = parseInt($('#total-order').text())
+			change = $('#change');
+			if(amount>=total_order && total_order>0){
+				$('#proceed-order').prop("disabled",false)
+				change.css("color","blue")
+			}else{
+				$('#proceed-order').prop("disabled",true)
+				change.css("color","red")
+			}
+
+			change_total = amount-total_order;
+			change.text(change_total)
+		}
+
+		function proceed_order(){
+			orders = new Array();
+			$('.ordered-product').each(function(index,el){
+				productid = $(this).attr("product-id");
+				price = parseFloat($(el).find(".price span").text().replace(/,/g, ''));
+				quantity = parseInt($(el).find(".quantity").text());
+				orders.push(productid+"::"+price+"::"+quantity);
+			});
+
+			$.ajax({
+				url:"/dealer/order/save/",
+				type:'POST',
+				data:{"orders":orders,"csrfmiddlewaretoken":$('[name=csrfmiddlewaretoken]').val(),"dealer_id":{{dealer_id}}},
+				success:function(data){
+					alert(data)
+					// window.location.reload()
+				},
+				error:function(){
+					alert("error")
+				}
+			});
+		}
+
+		function monthly_check(a) {
+			if($(a).is(':checked')){
+				$('#search_date').attr("type","month");
+			}else{
+				$('#search_date').attr("type","date");
+
+			}
+		}
+</script>
+{% endblock content %}

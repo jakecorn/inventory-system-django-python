@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+	
+{% block content %}
+{% include "includes/dealer_tab.html" %}
+
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-7 title" >
+						<span class="fa fa-user"></span>Dealer Update				
+					</div>
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+				<form method="post" action="">
+					{% csrf_token %}
+
+						{{form.management_form}}
+						{%for field in form%}
+							<div class="form-group">
+								<label class="form-label">{{field.label}}</label> <small class="text-success">{#field.help_text#}</small>
+									{{field.errors}}
+								{{field}}				
+							</div>
+						{%endfor%}
+
+					<a href="{% url "dealer_list" %}" class="btn btn-warning">Cancel Update</a>
+					<button class="btn btn-primary">Save Update</button>
+				</form>
+			</div>
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+{% endblock content %}

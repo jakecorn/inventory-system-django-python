@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+	
+{% block content %}
+{% include "includes/supplier_tab.html" %}
+
+<div class="content-wrapper">
+	<div name="content">							
+		<div class="head">
+			<div class="row">				
+				<div class="col-sm-9 title" >
+					<span class="fa fa-book"></span>Supplier List				
+				</div>
+				<div class="col-sm-3">
+					<input type="search" placeholder="Search user by name" class="form-control" style="top:-6px;padding:2px;position: absolute;right:15px">	
+				</div>
+			</div>
+		</div>
+
+		<div class="content padding table-responsive">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>Supplier Code</th>
+						<th>Supplier Name</th>
+						<th>Contact Number</th>
+						<th>Address</th>
+						<th><center>Actions</center></th>
+					</tr>
+				</thead>
+				<tbody>								
+					
+					{% for supplier in supplier_list %}
+						<tr>
+							<td><b>{{forloop.counter}}</b>. {{ supplier.code }}</td>
+							<td>{{ supplier.name }}</td>
+							<td>{{ supplier.number }}</td>
+							<td>{{ supplier.address }}</td>
+							<td class="action-container" align="center">
+								<a  href="{% url "supplier_update" supplier.id %}" class="btn-primary action" title="Edit User Data">
+									<span class="fa fa-pencil"></span> Edit Info
+								</a>
+
+								<a href="{% url "supplier_delete" supplier.id %}" class="btn-danger action" title="Delete User">
+									<span class="fa fa-remove"></span> Delete
+								</a>
+							</td>
+						</tr>
+					{%empty%}
+						<tr>
+							<td colspan="12312" align="center">
+								<h1 class="text-danger">No record found!</h1>
+							</td>
+						</tr>
+					{% endfor %}
+					
+				</tbody>
+			</table>	
+		</div>
+	</div> <!-- end of content -->
+</div> <!--end of content-wrapper -->
+
+{% endblock content %}

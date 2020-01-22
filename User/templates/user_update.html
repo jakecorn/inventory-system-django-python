@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+	
+{% block content %}
+{% include "includes/user_tab.html" %}
+
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-7 title" >
+						<span class="fa fa-user"></span>User Update Account				
+					</div>
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+					<form action="submit/" method="post">
+						{% csrf_token %}
+						<div class="form-group">
+							<label>First Name</label>
+							<input type="text" name="fname" class="form-control" value="{{user.firstname}}">
+						</div>
+
+						<div class="form-group">
+							<label>Last Name</label>
+							<input type="text" name="lname" class="form-control" value="{{user.lastname}}">
+						</div>
+
+						<div class="form-group">
+							<label>Email</label>
+							<input type="text" name="email" class="form-control" value="{{user.email}}"></input>
+						</div>
+						
+						<div class="form-group">
+							<a href="{% url "user_list" %}" class="btn btn-warning text-white m-right">Cancel Update</a>
+							<button class="btn btn-primary text-white b-width">Save Update</button>
+						</div>
+					</form>
+			</div>
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+{% endblock content %}

@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+	
+{% block content %}
+{% include "includes/user_tab.html" %}
+
+<div class="content-wrapper">
+	<div name="content">							
+		<div class="head">
+			<div class="row">				
+				<div class="col-sm-9 title" >
+					<span class="fa fa-user"></span>User List				
+				</div>
+				<div class="col-sm-3">
+					<input type="search" placeholder="Search user by name" class="form-control" style="top:-6px;padding:2px;position: absolute;right:15px">	
+				</div>
+			</div>
+		</div>
+
+		<div class="content padding table-responsive">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Email</th>
+						<th>Password</th>
+						<th><center>Actions</center></th>
+					</tr>
+				</thead>
+				<tbody>								
+					
+					{% for user in user_list %}
+						<tr>
+							<td>{{ user.firstname }}</td>
+							<td>{{ user.lastname }}</td>
+							<td>{{ user.email }}</td>
+							<td align="center">*****</td>
+							<td class="action-container" align="center">
+								<a  href="{% url "user_update" user.id  %}" class="btn-primary action" title="Edit User Data">
+									<span class="fa fa-pencil"></span>
+								</a>
+
+								<a href="{% url "user_delete" user.id  %}" class="btn-danger action" title="Delete User">
+									<span class="fa fa-remove"></span>
+								</a>
+							</td>
+						</tr>
+					{% endfor %}
+					
+				</tbody>
+			</table>	
+		</div>
+	</div> <!-- end of content -->
+</div> <!--end of content-wrapper -->
+
+{% endblock content %}

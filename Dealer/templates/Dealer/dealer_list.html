@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+	
+{% block content %}
+{% include "includes/dealer_tab.html" %}
+
+<div class="content-wrapper">
+	<div name="content">							
+		<div class="head">
+			<div class="row">				
+				<div class="col-sm-8 title" >
+					<span class="fa fa-book"></span>Dealer List				
+				</div>
+				<div class="col-sm-4">
+					<form>					
+						<div class="input-group search-box" style="margin-top:-5px;margin-bottom:-120px">
+							<input type="text" class="form-control" name="dealer_query" placeholder="Search for dealers/customers">
+						      <span class="input-group-btn">
+						        <button class="btn btn-default" type="submit"><i class="fa fa-search fa-fw"></i></button>
+						      </span>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="content padding table-responsive">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Address</th>
+						<th>Email</th>
+						<th>Contact Number</th>
+						<th><center>Actions</center></th>
+					</tr>
+				</thead>
+				<tbody>								
+					
+					{% for dealer in dealers %}
+						<tr>
+							<td><b>{{forloop.counter}}</b>. {{ dealer.dealer_name }}</td>
+							<td>{{ dealer.dealer_name }}</td>
+							<td>{{ dealer.dealer_email }}</td>
+							<td>{{ dealer.dealer_contact_number }}</td>
+							<td class="action-container" align="center">
+
+								<a  href="{% url "add_order" dealer.id %}" class="btn btn-primary btn-sm action" title="View Dealer Orders">
+									<span class="fa fa-plus"></span> View | Add Orders
+								</a>
+
+								<a  href="{% url "dealer_update" dealer.id %}" class="btn btn-warning btn-sm action" title="Edit Dealer Data">
+									<span class="fa fa-pencil"></span> Edit
+								</a>
+
+								<span href="{% url "dealer_delete" dealer.id %}"  data-toggle="modal" data-target="#delete_modal" class="btn btn-danger btn-sm action delete_action" name="{{ dealer.dealer_name }}" title="Delete Dealer">
+									<span class="fa fa-remove"></span> Delete
+								</span>
+							</td>
+						</tr>
+					{%empty%}
+						<tr>
+							<td colspan="12312" align="center">
+								<h1 class="text-danger">No record found!</h1>
+							</td>
+						</tr>
+					{% endfor %}
+					
+				</tbody>
+			</table>	
+		</div>
+	</div> <!-- end of content -->
+</div> <!--end of content-wrapper -->
+
+{% endblock content %}

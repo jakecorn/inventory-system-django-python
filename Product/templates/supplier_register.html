@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+	
+{% block content %}
+{% include "includes/supplier_tab.html" %}
+	<div class="content-wrapper">
+		<div name="content">							
+			<div class="head">
+				<div class="row">				
+					<div class="col-sm-7 title" >
+						<span class="fa fa-book"></span>Register Supplier				
+					</div>
+				</div>
+			</div>
+
+			<div class="content padding table-responsive">
+					
+					<form action="{% url "supplier_register" %}" method="post">
+						{% csrf_token %}
+						{% for field in form %}
+							<div class="form-group">
+								<label>{{field.label}}</label>
+								{{field.errors}}
+								{{field}}
+							</div>
+						{% endfor %}
+						
+						<div class="form-group">
+							<button type="reset" class="btn btn-warning text-white b-width m-right">Reset</button>
+							<button class="btn btn-primary text-white b-width">Save Product</button>
+						</div>
+					</form>
+			</div>
+		</div> <!-- end of content -->
+	</div> <!--end of content-wrapper -->
+
+{% endblock content %}
